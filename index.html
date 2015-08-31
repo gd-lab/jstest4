@@ -64,6 +64,9 @@
         }
 
     </style>
+
+    <script data-main="scripts/app" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.20/require.min.js"></script>
+
 </head>
 <body>
 
@@ -135,78 +138,6 @@
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 </script>
-
-<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
-
-
-<script>
-
-    function isIncludedInSearch(user, search) {
-        if (typeof search === "undefined" || search === "") return true;
-        search = search.toLowerCase();
-        return ~user.name.toLowerCase().indexOf(search)
-                || ~user.email.toLowerCase().indexOf(search);
-    };
-
-    function renderUsersList(users) {
-        var search = $("#searchText").val();
-        var compiledTemplate = _.template($("#userTemplate").html());
-        var resultHtml = "";
-
-        for (var i = 0, max = users.length; i < max; i++) {
-            var user = users[i];
-            if (isIncludedInSearch(user, search)) {
-                resultHtml += compiledTemplate({user: user});
-            }
-        }
-
-        $("#users").html(resultHtml);
-    }
-
-
-
-    $(document).ready(function() {
-        var $modal = $("#modal");
-        var users;
-
-        $.ajaxSetup({
-            beforeSend: function() {
-               $('#loading').show();
-            },
-            complete: function(){
-               $('#loading').hide();
-            },
-            success: function() {}
-        });
-
-        $.ajax({
-            type: "GET",
-            url: "http://jsonplaceholder.typicode.com/users"
-        }).done(function (data) {
-            users = data;
-            var renderFn = renderUsersList.bind(this, users);
-            renderFn();
-            $("#searchText").on("keyup", renderFn);
-            $("#searchBtn").on("click", renderFn);
-
-        }).fail(function() {
-            alert("Ajax failed to fetch data");
-        });
-
-        $("#users").on("click", ".user-row", function() {
-            var userId = $(this).data("user-id");
-            var user = _.find(users, {id: userId});
-            var modalHtml = _.template($("#modalTemplate").html())({user: user});
-            $modal.html(modalHtml);
-            $(".modal", $modal).modal({keyboard: true});
-        });
-
-    });
-
-</script>
-
 
 </body>
 </html>
